@@ -25,8 +25,11 @@ APP_HEIGHT = 150
 APP_ASPECT_RATIO = 2
 BACKGROUND_OPACITY = 0.5
 
+# Initialize empty dict in which all fetched Assetto Corsa data is stored
+ac_data = {}
+ac_data['wind_speed'] = 10
 
-ac_wind_speed = 10
+arrow = {}
 
 # Timers
 data_timer_60_hz = 0
@@ -46,7 +49,6 @@ def acMain(ac_version):
     ac.setIconPosition(app_window, 0, -10000)
     ac.addRenderCallback(app_window, onFormRender)
 
-    
 
 
     # Temporary code whilst developing the app
@@ -73,10 +75,11 @@ def acUpdate(deltaT):
     """Run every physics tick of Assetto Corsa. """
     global data_timer_60_hz, data_timer_0p1_hz
     global calc_timer_60_hz
-    global ac_rel_direction, ac_car_direction, ac_wind_direction, ac_wind_speed
+
+    global ac_data
+    global arrow
+
     global APP_HEIGHT, APP_ASPECT_RATIO
-    global color_shift_percent
-    global arrow_coords
 
     #Update timers
     data_timer_60_hz += deltaT
@@ -86,61 +89,79 @@ def acUpdate(deltaT):
     PERIOD_60_HZ = 1 / 60
     PERIOD_0p1_HZ = 10
 
-    # Retrieve data
+    # Retrieve data at 60 hz
     if data_timer_60_hz > PERIOD_60_HZ:
         # Reset timer
         data_timer_60_hz -= PERIOD_60_HZ
 
-        # Wind direction supplied in degrees, 0 at north. Converted to radians.
-        ac_wind_direction = ac.getWindDirection() * math.pi / 180
-        # Car direction supplied in radians, 0 at south. Adjusted to 0 at north.
-        ac_car_direction = info.physics.heading + math.pi
+        # Wind direction is provided in degrees, 0 at north. Converted to radians.
+        ac_data['wind_direction'] = ac.getWindDirection() * math.pi / 180
+        # Car direction is provided in radians, 0 at south. Adjusted to 0 at north.
+        ac_data['car_direction'] = info.physics.heading + math.pi
 
+    # Retrieve data at 0.1 hz
     if data_timer_0p1_hz > PERIOD_0p1_HZ:
         # Reset timer
         data_timer_0p1_hz -= PERIOD_0p1_HZ
-        # Get wind speed, air temp, road temp, track grip
-        ac_wind_speed = ac.getWindSpeed()
-        ac_air_temp = info.physics.airTemp
-        ac_road_temp = info.physics.roadTemp 
-        ac_track_grip = info.graphics.surfaceGrip
 
-    # Calculations
+        # Get wind speed, air temp, road temp, track grip
+        ac_data['wind_speed'] = ac.getWindSpeed()
+        ac_data['air_temp'] = info.physics.airTemp
+        ac_data['road_temp'] = info.physics.roadTemp 
+        ac_data['track_grip'] = info.graphics.surfaceGrip
+
+    # Calculations at 60 hz
     if calc_timer_60_hz > PERIOD_60_HZ:
         # Reset timer
         calc_timer_60_hz -= PERIOD_60_HZ
 
+        # Calculations for wind arrow indicator
         # Calculate wind direction relative to car heading direction.
-        ac_rel_direction = ac_wind_direction - ac_car_direction
+        arrow['angle'] = ac_data['wind_direction'] - ac_data['car_direction']
 
-        arrow_origin = {'x': APP_HEIGHT * APP_ASPECT_RATIO - (APP_HEIGHT / 2), 'y': APP_HEIGHT / 2}
-        arrow_radius = APP_HEIGHT * 0.4
-        ARROW_WIDTH = 0.5
+        arrow['origin'] = {'x': APP_HEIGHT * APP_ASPECT_RATIO - (APP_HEIGHT / 2), 'y': APP_HEIGHT / 2}
+        arrow['radius'] = APP_HEIGHT * 0.4
+        arrow['width'] = 0.5
 
-        if ac_wind_speed < 0.1:
-            ac_rel_direction = 0
+        # If the wind speed is negligible (near 0), set angle to 0.
+        if ac_data['wind_speed'] < 0.1:
+            arrow['angle'] = 0
 
-        # Tip of the arrow
-        arrow_u = polar_to_cartesian_coords(arrow_origin, arrow_radius, ac_rel_direction)
-        # Right point of the arrow
-        arrow_r = polar_to_cartesian_coords(arrow_origin, arrow_radius, ac_rel_direction + math.pi - ARROW_WIDTH)
-        # Bottom point of the arrow
-        arrow_d = polar_to_cartesian_coords(arrow_origin, arrow_radius * 0.5, ac_rel_direction + math.pi)
-        # Left point of the arrow
-        arrow_l = polar_to_cartesian_coords(arrow_origin, arrow_radius, ac_rel_direction + math.pi + ARROW_WIDTH)
-        # Turn coordinates into a list to avoid using many arguments
-        arrow_coords = [arrow_u, arrow_r, arrow_d, arrow_l]
+        # Calculate x,y coordinates to draw the four corners of the wind arrow
+        arrow['xy_tip'] = polar_to_cartesian_coords(arrow['origin'], arrow['radius'], arrow['angle'])
+        arrow['xy_bot_right'] = polar_to_cartesian_coords(arrow['origin'], arrow['radius'], arrow['angle'] + math.pi - arrow['width'])
+        arrow['xy_bot_center'] = polar_to_cartesian_coords(arrow['origin'], arrow['radius'] * 0.5, arrow['angle'] + math.pi)
+        arrow['xy_bot_left'] = polar_to_cartesian_coords(arrow['origin'], arrow['radius'], arrow['angle'] + math.pi + arrow['width'])
 
-        # ac_rel_direction can range fron -2pi to +2pi.
-        # needs to be remapped from [-2pi, 0, 2pi] to [0, 1, 0]
-        color_shift_percent = 1 - abs((abs(ac_rel_direction)/math.pi - 1))
+        # Arrow coloring from green (headwind) to yellow (sidewind) to red (tailwind).
+        # arrow['angle'] can take on values between [-2pi, +2pi]
+        # needs to be remapped from [-2pi, 0, 2pi] to [0, 1, 0] in a linear way
+        arrow['color_shift'] = 1 - abs((abs(arrow['angle'])/math.pi - 1))
+
+        if ac_data['wind_speed'] < 0.1:
+            arrow['rgba'] = {'r': 0.6, 
+                             'g': 0.6, 
+                             'b': 0.6, 
+                             'a': 0.6}
+        else:
+            if arrow['color_shift'] < 0.5:
+                red_amount = 2 * arrow['color_shift']
+                arrow['rgba'] = {'r': red_amount, 
+                                 'g': 1, 
+                                 'b': 0, 
+                                 'a': 1}
+            else:
+                green_amount = 1 - (arrow['color_shift'] - 0.5) * 2
+                arrow['rgba'] = {'r': 1, 
+                                 'g': green_amount, 
+                                 'b': 0, 
+                                 'a': 1}
 
 
 def onFormRender(deltaT):
     """Run every rendered frame of Assetto Corsa. """
-    global ac_rel_direction, ac_wind_speed
-
-    draw_wind_indicator(arrow_coords, ac_wind_speed)
+    # Draw wind arrow indicator
+    draw_wind_indicator()
 
 
 def onFormRender_dev(deltaT):
@@ -149,31 +170,25 @@ def onFormRender_dev(deltaT):
     global ac_wind_direction, ac_car_direction, ac_rel_direction
 
     ac.setText(label_wind_direction, "Wind Dir: {:.1f}".format(data_timer_0p1_hz))
-    ac.setText(label_car_direction, "Car Dir: {:.2f}".format(ac_car_direction))
-    ac.setText(label_rel_direction, "Rel Dir: {:.2f}".format(ac_rel_direction))
+    ac.setText(label_car_direction, "Car Dir: {:.2f}".format(ac_data['car_direction']))
+    ac.setText(label_rel_direction, "Rel Dir: {:.2f}".format(arrow['angle']))
 
 
-def draw_wind_indicator(arrow_coords, ac_wind_speed):
-    """Draw wind indicator on app
+def draw_wind_indicator():
+    """Draw wind indicator on app."""
+    # Set wind indicator color
+    ac.glColor4f(arrow['rgba']['r'], 
+                 arrow['rgba']['g'], 
+                 arrow['rgba']['b'], 
+                 arrow['rgba']['a'])
 
-    Args:
-        ac_rel_direction (float): Wind direction relative to car heading direction in radians.
-        ac_wind_speed (float): Wind speed in in kmh
-    """
-    if ac_wind_speed < 0.1:
-        ac.glColor4f(0.6, 0.6, 0.6, 0.6)
-    else:
-        if color_shift_percent < 0.5:
-            red_amount = 2 * color_shift_percent
-            ac.glColor4f(red_amount, 1, 0, 1)
-        else:
-            green_amount = 1 - (color_shift_percent - 0.5) * 2
-            ac.glColor4f(1, green_amount, 0, 1)
-
+    # Start drawing geometry. 3 stands for quad
     ac.glBegin(3)
-    # Add points
-    for vertex in arrow_coords:
-        ac.glVertex2f(vertex['x'], vertex['y'])
+    # Add vertices
+    ac.glVertex2f(arrow['xy_tip']['x'], arrow['xy_tip']['y'])
+    ac.glVertex2f(arrow['xy_bot_right']['x'], arrow['xy_bot_right']['y'])
+    ac.glVertex2f(arrow['xy_bot_center']['x'], arrow['xy_bot_center']['y'])
+    ac.glVertex2f(arrow['xy_bot_left']['x'], arrow['xy_bot_left']['y'])
     ac.glEnd()
 
 
