@@ -4,7 +4,7 @@ This is an app for Assetto Corsa, a racing simulator built by Kunos Simulazioni.
 
 ![Screenshot](https://i.imgur.com/N8jDF3z.png)
 
-## Instructions
+## Installation and setup
 
 The app can be installed by pasting the content of the .zip file in the main root folder of Assetto Corsa, and must be enabled in the Assetto Corsa main menu. The size of the app can be tweaked in the config file.
 

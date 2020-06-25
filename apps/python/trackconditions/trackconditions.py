@@ -81,7 +81,7 @@ def acMain(ac_version):
     ac.addRenderCallback(app_window, onFormRender)
 
     # Initialize custom font
-    ac.initFont(0, "Roboto Light", 0, 0)
+    ac.initFont(0, "TrackConditions", 0, 0)
     # Calculate fontsize based on padding and app height
     fontsize = (app_info['height'] * (1 - (2 + 3 * 0.5) * app_info['padding'])) / 4
 
@@ -97,9 +97,9 @@ def acMain(ac_version):
         ac.setPosition(
             labels[key],
             app_info['padding'] * app_info['height'],
-            (n - 0.35) * fontsize + (1 + 0.6 * n) * app_info['padding'] * app_info['height'])
+            (n - 0.2) * fontsize + (1 + 0.6 * n) * app_info['padding'] * app_info['height'])
         ac.setFontSize(labels[key], fontsize)
-        ac.setCustomFont(labels[key], "Roboto Light", 0, 0)
+        ac.setCustomFont(labels[key], "TrackConditions", 0, 0)
         ac.setFontColor(labels[key], 0.9, 0.9, 0.9, 1)
 
     # Start right-aligned data labels
@@ -114,9 +114,9 @@ def acMain(ac_version):
         ac.setPosition(
             labels[key],
             app_info['height'] * (app_info['aspect_ratio'] - 1 - app_info['padding']),
-            (n - 0.35) * fontsize + (1 + 0.6 * n) * app_info['padding'] * app_info['height'])
+            (n - 0.2) * fontsize + (1 + 0.6 * n) * app_info['padding'] * app_info['height'])
         ac.setFontSize(labels[key], fontsize)
-        ac.setCustomFont(labels[key], "Roboto Light", 0, 0)
+        ac.setCustomFont(labels[key], "TrackConditions", 0, 0)
         ac.setFontColor(labels[key], 0.9, 0.9, 0.9, 1)
         ac.setFontAlignment(labels[key], "right")
 
