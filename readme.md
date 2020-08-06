@@ -2,7 +2,7 @@
 
 This is an app for Assetto Corsa, a racing simulator built by Kunos Simulazioni. It provides the user with a live wind direction indicator, as well as the wind speed, ambient temperature, track temperature and track grip state. 
 
-![Screenshot](https://i.imgur.com/N8jDF3z.png)
+![Screenshot](assets/app_preview.png)
 
 ## Installation and setup
 
