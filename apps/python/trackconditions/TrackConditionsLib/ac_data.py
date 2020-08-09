@@ -24,7 +24,7 @@ os.environ['PATH'] = os.environ['PATH'] + ";."
 from TrackConditionsLib.sim_info import info
 
 class Session:
-    """Handling all data from AC that is not car-specific.
+    """ Handling all data from AC that is not car-specific.
     
     Args:
         cfg (obj:Config): App configuration.
@@ -66,7 +66,7 @@ class Session:
         self.road_temp = info.physics.roadTemp
         self.track_grip = info.graphics.surfaceGrip * 100
 
-        # Update car
+        # Update car specific data
         self.focused_car.set_id(self.focused_car_id)
         self.focused_car.update()
 

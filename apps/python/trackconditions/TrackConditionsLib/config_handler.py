@@ -12,7 +12,7 @@ class Config:
         # Set app attributes that are non-configurable by user, 
         # which therefore don't appear in the config file.
         self.app_name = "TrackConditions"
-        self.app_aspect_ratio = 2.35 # WAS 2.25
+        self.app_aspect_ratio = 2.35
         self.app_padding = 0.1 # Fraction of app height
 
         # Load config

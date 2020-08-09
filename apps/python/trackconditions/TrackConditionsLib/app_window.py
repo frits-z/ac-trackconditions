@@ -1,7 +1,7 @@
 import ac
 
 class AppWindow:
-    """Main window of the app.
+    """ Main window of the app.
     
     Args:
     cfg (obj:Config): Config object used to set
@@ -17,9 +17,8 @@ class AppWindow:
         # Set app dimensions
         ac.setSize(self.id, self.cfg.app_width, self.cfg.app_height)
 
-        # TODO Check if this works.
+        # Load and set background texture
         self.bg_texture_path = cfg.app_dir + "/img/bg.png"
-        # self.bg_texture_path = "apps/python/traces/img/bg.png"
         ac.setBackgroundTexture(self.id, self.bg_texture_path)
 
         # Hide default background and border
@@ -36,17 +35,17 @@ class AppWindow:
         self.drawables = []
 
     def add_drawable(self, obj):
-        """Add drawable object to list of drawables"""
+        """ Add drawable object to list of drawables"""
         if obj not in self.drawables:
             self.drawables.append(obj)
 
     def remove_drawable(self, obj):
-        """Remove drawable object from list of drawables"""
+        """ Remove drawable object from list of drawables"""
         if obj in self.drawables:
             self.drawables.remove(obj)
 
     def draw(self):
-        """Draw graphics elements on the app window.
+        """ Draw graphics elements on the app window.
 
         Args:
             deltaT (float): Time delta since last tick in seconds.

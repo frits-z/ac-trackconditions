@@ -91,7 +91,6 @@ def acMain(ac_version):
             100 * cfg.app_scale
         )
 
-
 def acUpdate(deltaT):
     """Run every physics tick of Assetto Corsa.
     

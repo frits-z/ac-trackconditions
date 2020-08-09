@@ -10,7 +10,7 @@ from TrackConditionsLib.ac_gl_utils import Quad
 from TrackConditionsLib.color_palette import Colors
 
 class WindIndicator:
-    """Example drawable class design.
+    """ Example drawable class design.
     
     Args:
         cfg (obj:Config)
@@ -29,21 +29,33 @@ class WindIndicator:
 
         self.color = Colors.grey
         self.angle = 0
+        
+        # Flip indicator 180 degrees (pi rad) if wind_vane_mode is false.
+        # The indicator will then function as an arrow pointing where the wind is going.
+        # The offset is only used at the calculation of the render queue,
+        # Because color coding should be unaffected and use the original angle.
+        if self.cfg.wind_vane_mode:
+            self.angle_offset = 0
+        else:
+            self.angle_offset = math.pi
 
-        # Center of rotation
+        # Center of rotation coordinates
         self.cor = Point(
             self.cfg.app_width - (self.cfg.app_height / 2),
             self.cfg.app_height / 2)
+
         self.radius = self.cfg.app_height * (0.5 - self.cfg.app_padding)
+        # Bottom left and right corners offset in radians from the tip.
         self.width = 2.6
 
+        # Building the wind indicator at 0 angle.
         # Tip of the indicator
         self.point_tip = Point(
             self.cor.x,
             self.cor.y - self.radius
         )
 
-        # y axis is inverted as bigger y means lower on the app window. therefore normally positive ccw rotation now is cw rotation.
+        # y axis is inverted as bigger y means lower position on the app window. therefore normally positive ccw rotation now is cw rotation.
         # Bottom left point of the indicator
         self.point_bot_left = self.point_tip.copy()
         self.point_bot_left.rotate_rad(-self.width, self.cor)
@@ -58,6 +70,7 @@ class WindIndicator:
         self.point_bot_right = self.point_tip.copy()
         self.point_bot_right.rotate_rad(self.width, self.cor)
 
+        # Build base indicator
         self.base_quad = Quad(
             self.point_tip,
             self.point_bot_left,
@@ -65,11 +78,12 @@ class WindIndicator:
             self.point_bot_right
         )
 
+        # Render queue contains the shape that gets rendered
         self.render_queue = self.base_quad.copy()
 
 
     def update(self):
-        """Updating the data for the drawable object."""
+        """ Updating the data for the drawable object. """
         # If there is no significant wind or session status is replay,
         # Then draw greyed out straight wind indicator.
         if (self.session.wind_speed < 0.1) or (self.session.status == 1):
@@ -94,16 +108,13 @@ class WindIndicator:
                 # r,g,b,a tuple
                 self.color = (1, green_value, 0, 1)
 
-        # TODO Look at traces app how I did this for the wheel indicator...
-        # build render queue quad
         _render_queue = self.base_quad.copy()
-        _render_queue.rotate_rad(self.angle, self.cor)
-
+        _render_queue.rotate_rad(self.angle + self.angle_offset, self.cor)
         self.render_queue = _render_queue
 
 
     def draw(self):
-        # Add this method to the draw method of the app window object.
+        """ Draw the model. """
         set_color(self.color)
 
         ac.glBegin(acsys.GL.Quads)
@@ -115,7 +126,7 @@ class WindIndicator:
 
 
 def set_color(rgba):
-    """Apply RGBA color for GL drawing.
+    """ Apply RGBA color for GL drawing.
 
     Agrs:
         rgba (tuple): r,g,b,a on a 0-1 scale.

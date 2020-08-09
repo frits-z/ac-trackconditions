@@ -147,6 +147,6 @@ class ACLabel:
         When hidden, the label doesn't get rendered and costs no performance.
         """
         if visible:
-            ac.set_visible(self.id, 1)
+            ac.setVisible(self.id, 1)
         else:
-            ac.set_visible(self.id, 0)
+            ac.setVisible(self.id, 0)
