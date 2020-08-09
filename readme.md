@@ -8,6 +8,9 @@ This is an app for Assetto Corsa, a racing simulator built by Kunos Simulazioni.
 
 The app can be installed by pasting the content of the .zip file in the main root folder of Assetto Corsa, and must be enabled in the Assetto Corsa main menu. The size of the app can be tweaked in the config file.
 
-## Functionality
+## Wind Indicator
+By default, the indicator acts as a wind vane for the true wind: It points into the wind, relative to the direction the car is facing. For example, if the vane is pointing downwards, that means the true wind is coming from behind: the car experiences a tailwind. The true wind is the wind that is experienced when stationary; the headwind that results from moving is excluded.
 
-The app provides the use with a live wind indicator. The indictator shows the wind direction relative to the direction the car is facing. The wind indicator is color-coded, showing green when the driver experiences headwind, yellow for a crosswind and red for a tailwind. A headwind produces more downforce and allows the driver to brake later and carry more speed through a corner.
+The wind indicator is color-coded. It shows green for a headwind, yellow for a crosswind and red for a tailwind. A headwind associated with green because the car has increased downforce.
+
+The wind indicator functionality is user configurable. If you wish that the wind indicator acts as an arrow that points where the wind is going, rather than toward the source, you can set this in the config.

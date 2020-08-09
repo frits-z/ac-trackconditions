@@ -76,7 +76,7 @@ class WindIndicator:
             self.angle = 0
             self.color = Colors.grey
         else:
-            self.angle = self.session.wind_dir - self.session.focused_car.heading_dir
+            self.angle = self.session.wind_dir - self.session.focused_car.heading
 
             # Arrow coloring from green (headwind) to yellow (sidewind) to red (tailwind).
             # self.angle can take on values between [-2pi, +2pi]

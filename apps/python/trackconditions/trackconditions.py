@@ -51,14 +51,15 @@ def acMain(ac_version):
     app_window = AppWindow(cfg)
     ac.addRenderCallback(app_window.id, app_render)
 
+    # Set up wind indicator object and add to list of drawables
     global wind_indicator
     wind_indicator = WindIndicator(cfg, session)
     app_window.add_drawable(wind_indicator)
 
-    # Initialize fonts
+    # Initialize font
     ac.initFont(0, 'ACRoboto300', 0, 0)
 
-    # TODO Add text labels
+    # Add text labels
     global label_grip_text, label_wind_text, label_road_text, label_air_text
     label_grip_text = ACLabel(app_window.id, text="GRIP:")
     label_wind_text = ACLabel(app_window.id, text="WIND:")
@@ -113,7 +114,7 @@ def app_render(deltaT):
     Important: Function only gets called if the app is visible.
     """
     global timer_30_hz, timer_1_hz
-    # Update timer
+    # Update timers
     timer_30_hz += deltaT
     timer_1_hz += deltaT
 
@@ -122,7 +123,7 @@ def app_render(deltaT):
         timer_1_hz -= PERIOD_1_HZ
 
         # Update text labels.
-        # If replay
+        # If replay, display empty text labels
         if session.status == 1:
             label_grip_val.set_text("-")
             label_wind_val.set_text("-")
@@ -138,13 +139,13 @@ def app_render(deltaT):
     if timer_30_hz > PERIOD_30_HZ:
         timer_30_hz -= PERIOD_30_HZ
 
-        # Update ac global data
+        # Update AC data
         session.update()
 
         # Update WindIndicator model
         wind_indicator.update()
 
-    # Draw graphics
+    # Draw graphics on app window
     app_window.draw()
 
 

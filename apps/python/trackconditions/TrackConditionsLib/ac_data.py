@@ -5,6 +5,8 @@ import sys
 import platform
 import math
 
+from TrackConditionsLib.ac_gl_utils import Point
+
 # Import Assetto Corsa shared memory library.
 # It has a dependency on ctypes, which is not included in AC python version.
 # Point to correct ctypes module based on platform architecture.
@@ -43,8 +45,6 @@ class Session:
         self.road_temp = 0
         self.track_grip = 0
 
-        # TODO add session type... To find out replay or not etc.
-
         # Initialize focused car object
         self.focused_car = Car(cfg, self.focused_car_id)
 
@@ -54,8 +54,13 @@ class Session:
         self.focused_car_id = ac.getFocusedCar()
         self.status = info.graphics.status
 
-        # Wind direction is provided in degrees, 0 at north. Converted to radians.
-        self.wind_dir = ac.getWindDirection() * math.pi / 180
+        # Wind direction is provided based on compass directions in degrees.
+        # North is 0 (or 360) degrees, East is 90, South is 180, West is 270.
+        # Against convention, the variable points where the wind is going.
+        # To fix this, it is flipped 180 degrees, so it points into the wind (toward the source).
+        # Finally, it is converted to radians.
+        self.wind_dir = ((ac.getWindDirection() + 180) % 360) * math.pi / 180
+
         self.wind_speed = ac.getWindSpeed()
         self.air_temp = info.physics.airTemp
         self.road_temp = info.physics.roadTemp
@@ -67,7 +72,7 @@ class Session:
 
 
 class Car:
-    """Handling all data from AC that is car-specific.
+    """ Handling all data from AC that is car-specific.
     
     Args:
         cfg (obj:Config): App configuration.
@@ -79,18 +84,37 @@ class Car:
         self.id = car_id
 
         # Initialize car data attributes
-        self.heading_dir = 0
+        self.heading = 0
 
 
     def set_id(self, car_id):
-        """Update car ID to retrieve data from.
+        """ Update car ID to retrieve data from.
         
         Args:
-            car_id (int): Car ID number."""
+            car_id (int): Car ID number.
+        """
         self.id = car_id
 
-    def update(self):
-        """Update data."""
 
-        # Car direction is provided in radians, 0 at south. Adjusted to 0 at north.
-        self.heading_dir = info.physics.heading + math.pi
+    def update(self):
+        """ Update car data. """        
+        # Assetto Corsa world position coordinate system (x,y,z):
+        # The x-axis is longitude, with east being positive.
+        # The y-axis is elevation, with up being positive.
+        # The z-axis is latitude, which south being positive.
+        fl_x, fl_y, fl_z = ac.getCarState(self.id, acsys.CS.TyreContactPoint, acsys.WHEELS.FL)
+        fr_x, fr_y, fr_z = ac.getCarState(self.id, acsys.CS.TyreContactPoint, acsys.WHEELS.FR)
+
+        # Calculate a vector that represents the direction of the front axle.
+        # Done by taking relative world position of FR wheel to FL wheel.
+        fa_x = fr_x - fl_x
+        fa_z = fr_z - fl_z
+
+        # Heading direction is perpendicular to front axle direction,
+        # So needs to be rotated 90 degrees counterclockwise.
+        h_x = fa_z
+        h_z = -fa_x
+
+        # Calculate heading based on compass direction angles
+        # 0 (or 2pi) is North, pi/2 East, pi South, 3/2 pi West
+        self.heading = -math.atan2(h_x, h_z) + math.pi
