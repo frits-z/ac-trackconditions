@@ -9,6 +9,7 @@ from TrackConditionsLib.ac_gl_utils import Quad
 
 from TrackConditionsLib.color_palette import Colors
 
+
 class WindIndicator:
     """ Example drawable class design.
     
@@ -30,56 +31,83 @@ class WindIndicator:
         self.color = Colors.grey
         self.angle = 0
         
-        # Flip indicator 180 degrees (pi rad) if wind_vane_mode is false.
-        # The indicator will then function as an arrow pointing where the wind is going.
-        # The offset is only used at the calculation of the render queue,
-        # Because color coding should be unaffected and use the original angle.
-        if self.cfg.wind_vane_mode:
-            self.angle_offset = 0
-        else:
-            self.angle_offset = math.pi
-
         # Center of rotation coordinates
         self.cor = Point(
             self.cfg.app_width - (self.cfg.app_height / 2),
             self.cfg.app_height / 2)
 
-        self.radius = self.cfg.app_height * (0.5 - self.cfg.app_padding)
-        # Bottom left and right corners offset in radians from the tip.
-        self.width = 2.6
+        # Radius of the arrow, used to scale it.
+        self.radius = self.cfg.app_height * (0.5 - (self.cfg.app_padding * 1.5))
 
-        # Building the wind indicator at 0 angle.
-        # Tip of the indicator
-        self.point_tip = Point(
-            self.cor.x,
-            self.cor.y - self.radius
+        # Building the base arrow which gets rotated with every update.
+        # First, arrow is built around center x,y 0,0.
+        # Next, the arrow is scaled to the specified radius
+        # Finally, it is moved in position by addition of the CoR coords to it.
+
+        # Arrow is made up of head and shaft.
+        # Head is split in left and right hand side: lhs & rhs,
+        # and a center piece.
+        self.arrow_head_tip = Point(0, -21)
+
+        self.arrow_head_rhs_t = Point(15.5, -6)
+        self.arrow_head_rhs_b = Point(15.5, 3)
+        
+        self.arrow_head_lhs_t = Point(-15.5, -6)
+        self.arrow_head_lhs_b = Point(-15.5, 3)
+
+        self.arrow_shaft_tl = Point(-3.5, -9)
+        self.arrow_shaft_tr = Point(3.5, -9)
+        self.arrow_shaft_br = Point(3.5, 21)
+        self.arrow_shaft_bl = Point(-3.5, 21)
+
+        # Right hand side of the arrow head
+        self.arrow_head_rhs = Quad(
+            self.arrow_head_tip,
+            self.arrow_shaft_tr,
+            self.arrow_head_rhs_b,
+            self.arrow_head_rhs_t
         )
 
-        # y axis is inverted as bigger y means lower position on the app window. therefore normally positive ccw rotation now is cw rotation.
-        # Bottom left point of the indicator
-        self.point_bot_left = self.point_tip.copy()
-        self.point_bot_left.rotate_rad(-self.width, self.cor)
-
-        # Bottom center point of the wind indicator
-        self.point_bot_center = Point(
-            self.cor.x,
-            self.cor.y + 0.5 * self.radius
+        # Left hand side of the arrow head
+        self.arrow_head_lhs = Quad(
+            self.arrow_head_tip,
+            self.arrow_head_lhs_t,
+            self.arrow_head_lhs_b,
+            self.arrow_shaft_tl
         )
 
-        # Bottom right point of the indicator
-        self.point_bot_right = self.point_tip.copy()
-        self.point_bot_right.rotate_rad(self.width, self.cor)
-
-        # Build base indicator
-        self.base_quad = Quad(
-            self.point_tip,
-            self.point_bot_left,
-            self.point_bot_center,
-            self.point_bot_right
+        # Shaft of the arrow
+        self.arrow_shaft = Quad(
+            self.arrow_shaft_tr,
+            self.arrow_shaft_tl,
+            self.arrow_shaft_bl,
+            self.arrow_shaft_br
         )
+
+        self.arrow_head_center = Quad(
+            self.arrow_head_tip,
+            self.arrow_shaft_tl,
+            self.arrow_shaft_bl,
+            self.arrow_shaft_tr
+        )
+
+        # Base shape containing all the quads that form the arrow
+        _base_shape = [
+            self.arrow_head_lhs,
+            self.arrow_head_rhs,
+            self.arrow_shaft,
+            self.arrow_head_center
+        ]
+
+        self.base_shape = []
+        for quad in _base_shape:
+            new_quad = quad.copy()
+            new_quad.multiply(self.radius / 21)
+            new_quad.add(self.cor)
+            self.base_shape.append(new_quad)
 
         # Render queue contains the shape that gets rendered
-        self.render_queue = self.base_quad.copy()
+        self.render_queue = self.base_shape.copy()
 
 
     def update(self):
@@ -98,31 +126,34 @@ class WindIndicator:
             color_shift = 1 - abs((abs(self.angle)/math.pi - 1))
 
             if color_shift < 0.5:
-                # From north to east/west shift color from green to yellow.
-                red_value = 2 * color_shift
-                # r,g,b,a tuple
-                self.color = (red_value, 1, 0, 1)
-            else:
-                # From east/west to south shift color from yellow to red.
-                green_value = 1 - (color_shift - 0.5) * 2
+                # From north to east/west shift color from red to yellow.
+                green_value = 2 * color_shift
                 # r,g,b,a tuple
                 self.color = (1, green_value, 0, 1)
+            else:
+                # From east/west to south shift color from yellow to green.
+                red_value = 1 - (color_shift - 0.5) * 2
+                # r,g,b,a tuple
+                self.color = (red_value, 1, 0, 1)
 
-        _render_queue = self.base_quad.copy()
-        _render_queue.rotate_rad(self.angle + self.angle_offset, self.cor)
+        _render_queue = []
+        for quad in self.base_shape:
+            new_quad = quad.copy()
+            new_quad.rotate_rad(self.angle, self.cor)
+            _render_queue.append(new_quad)
+
         self.render_queue = _render_queue
-
 
     def draw(self):
         """ Draw the model. """
         set_color(self.color)
-
-        ac.glBegin(acsys.GL.Quads)
-        ac.glVertex2f(self.render_queue.points[0].x, self.render_queue.points[0].y)
-        ac.glVertex2f(self.render_queue.points[1].x, self.render_queue.points[1].y)
-        ac.glVertex2f(self.render_queue.points[2].x, self.render_queue.points[2].y)
-        ac.glVertex2f(self.render_queue.points[3].x, self.render_queue.points[3].y)
-        ac.glEnd()
+        for quad in self.render_queue:
+            ac.glBegin(acsys.GL.Quads)
+            ac.glVertex2f(quad.points[0].x, quad.points[0].y)
+            ac.glVertex2f(quad.points[1].x, quad.points[1].y)
+            ac.glVertex2f(quad.points[2].x, quad.points[2].y)
+            ac.glVertex2f(quad.points[3].x, quad.points[3].y)
+            ac.glEnd()
 
 
 def set_color(rgba):

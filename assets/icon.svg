@@ -7,16 +7,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="300.25208"
-   inkscape:export-xdpi="300.25208"
-   inkscape:export-filename="C:\Users\Frits\Documents\AC App Development\trackconditions\assets\icon_ON.png"
-   version="1.1"
-   id="svg4092"
-   width="64"
-   height="64"
-   viewBox="0 0 64 64"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
    sodipodi:docname="icon.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+   viewBox="0 0 64 64"
+   height="64"
+   width="64"
+   id="svg4092"
+   version="1.1"
+   inkscape:export-filename="C:\Users\Frits\Documents\AC App Development\trackconditions\assets\icon_ON_large.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
   <metadata
      id="metadata4098">
     <rdf:RDF>
@@ -32,58 +32,58 @@
   <defs
      id="defs4096" />
   <sodipodi:namedview
-     inkscape:document-rotation="0"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     id="namedview4094"
-     showgrid="false"
-     inkscape:pagecheckerboard="true"
-     inkscape:zoom="11.484375"
-     inkscape:cx="21.54433"
-     inkscape:cy="13.614518"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:current-layer="layer7"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer7" />
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:cy="32.071512"
+     inkscape:cx="31.83369"
+     inkscape:zoom="11.484375"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     id="namedview4094"
+     inkscape:window-height="1017"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     inkscape:document-rotation="0" />
   <g
-     inkscape:groupmode="layer"
-     id="layer6"
+     style="display:inline"
      inkscape:label="Activated"
-     style="display:inline">
+     id="layer6"
+     inkscape:groupmode="layer">
     <circle
-       cx="32"
-       cy="32"
-       r="28.955103"
+       style="fill:#dfff00;fill-opacity:1;stroke-width:0"
        id="circle4114"
-       style="fill:#dfff00;fill-opacity:1;stroke-width:0" />
+       r="28.955103"
+       cy="32"
+       cx="32" />
+  </g>
+  <g
+     inkscape:label="Details"
+     id="layer7"
+     inkscape:groupmode="layer"
+     style="display:inline">
+    <path
+       sodipodi:nodetypes="cccccccccc"
+       id="path869"
+       d="m 16.216607,47.783393 -0.375794,-22.923498 6.764311,-6.764312 -1e-6,18.038163 22.547704,-22.547705 5.261132,5.261132 -22.547705,22.547704 18.038163,-1e-6 -6.764312,6.764312 z"
+       style="display:inline;fill:#ff3500;fill-opacity:1;stroke:none;stroke-width:0.531455px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
   <g
      style="display:inline"
-     inkscape:groupmode="layer"
-     id="layer7"
-     inkscape:label="Details">
-    <path
-       style="fill:#ff3500;fill-opacity:1;stroke:none;stroke-width:0.439763px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 34.115785,9.4293466 18.719876,48.771669 52.201018,23.219796 38.284379,22.805264 Z"
-       id="path26"
-       inkscape:export-xdpi="300.25208"
-       inkscape:export-ydpi="300.25208" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
+     inkscape:label="Ring"
      id="layer5"
-     inkscape:label="Ring">
+     inkscape:groupmode="layer">
     <path
-       id="path4110"
+       d="M 31.765625,3.0449219 A 28.955103,28.955103 0 0 0 3.0449219,32 28.955103,28.955103 0 0 0 32,60.955078 28.955103,28.955103 0 0 0 60.955078,32 28.955103,28.955103 0 0 0 32,3.0449219 a 28.955103,28.955103 0 0 0 -0.234375,0 z M 32,6.7011719 A 25.29796,25.29796 0 0 1 57.298828,32 25.29796,25.29796 0 0 1 32,57.298828 25.29796,25.29796 0 0 1 6.7011719,32 25.29796,25.29796 0 0 1 32,6.7011719 Z"
        style="fill:#ffffff;stroke-width:0"
-       d="M 31.765625 3.0449219 A 28.955103 28.955103 0 0 0 3.0449219 32 A 28.955103 28.955103 0 0 0 32 60.955078 A 28.955103 28.955103 0 0 0 60.955078 32 A 28.955103 28.955103 0 0 0 32 3.0449219 A 28.955103 28.955103 0 0 0 31.765625 3.0449219 z M 32 6.7011719 A 25.29796 25.29796 0 0 1 57.298828 32 A 25.29796 25.29796 0 0 1 32 57.298828 A 25.29796 25.29796 0 0 1 6.7011719 32 A 25.29796 25.29796 0 0 1 32 6.7011719 z " />
+       id="path4110" />
   </g>
 </svg>

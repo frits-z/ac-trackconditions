@@ -56,10 +56,9 @@ class Session:
 
         # Wind direction is provided based on compass directions in degrees.
         # North is 0 (or 360) degrees, East is 90, South is 180, West is 270.
-        # Against convention, the variable points where the wind is going.
-        # To fix this, it is flipped 180 degrees, so it points into the wind (toward the source).
-        # Finally, it is converted to radians.
-        self.wind_dir = ((ac.getWindDirection() + 180) % 360) * math.pi / 180
+        # Against convention, the variable points where the wind is going (rather than at the source)
+        # It is converted to radians.
+        self.wind_dir = ac.getWindDirection() * math.pi / 180
 
         self.wind_speed = ac.getWindSpeed()
         self.air_temp = info.physics.airTemp

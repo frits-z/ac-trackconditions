@@ -36,7 +36,6 @@ class Config:
         # Load attributes from config.
         # If option is missing, get option from defaults and replace. 
         self.getint('GENERAL', 'app_height')
-        self.getbool('WIND INDICATOR', 'wind_vane_mode')
 
         # Generate attributes derived from config options
         self.app_width = self.app_height * self.app_aspect_ratio

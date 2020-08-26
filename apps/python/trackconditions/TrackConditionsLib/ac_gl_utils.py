@@ -48,7 +48,7 @@ class Point:
         self.x -= p.x
         self.y -= p.y
 
-    def multiply(self, val):
+    def multiply(self, p):
         """Multiply Point by value.
         
         Args:
@@ -63,7 +63,7 @@ class Point:
         self.x *= p.x
         self.y *= p.y
 
-    def divide(self, val):
+    def divide(self, p):
         """Divide Point by value.
         
         Args:
